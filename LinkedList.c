@@ -83,22 +83,29 @@ void stopNodes(Node head, int force) {
 	pid_t res;
 	int finish[20][2];
 	int i = 0;
+	int sig;
 
-	if (force == FORCE) force = SIGTERM;
-	else if (force == NOFORCE) force = SIGUSR1; 
+	if (force == FORCE) sig = SIGTERM;
+	else if (force == NOFORCE) sig = SIGUSR1; 
 
 	listNodes(head);
 
 	while (iter != NULL) {
 		res = waitpid(iter->_pid, &status, WNOHANG);
-		if (res == iter->_pid){
-			kill(iter->_pid, force);
+		if (res == 0){
+			
+			if (force == NOFORCE || force == FORCE){
+				kill(iter->_pid, sig);
+			}
+			
 			if(waitpid(iter->_pid, &status, 0)) {
 				finish[i][0] = iter->_pid;
 				finish[i++][1] = status;
 			} else {
 				printf("Processo %d crashou\n", iter->_pid);
 			}
+			
+
 		} else {
 			finish[i][0] = iter->_pid;
 			finish[i++][1] = status;
@@ -108,7 +115,7 @@ void stopNodes(Node head, int force) {
 
 	printf("i-banco vai terminar.\n--\n");
 	for (i--; i >= 0; i--) {
-		printf("FILHO TERMINADO (PID=%d; terminou )\n", finish[i][0]);//TODO(finish[i][1]));
+		printf("FILHO TERMINADO (PID=%d; terminou %s)\n", finish[i][0], TODO(finish[i][1]));
 	}
 	printf("--\ni-banco terminou.\n");
 
@@ -119,4 +126,13 @@ void listNodes(Node head) {
 	if (head == NULL) return;
 	printf("%d\n", head->_pid);
 	listNodes(head->_next);
+}
+
+const char* TODO(int status){
+	if (WIFEXITED(status)){
+		return "normalmente";
+	}
+	else{
+		return "abruptamente";
+	}
 }

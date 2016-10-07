@@ -5,6 +5,7 @@
 
 #define FORCE 0
 #define NOFORCE 1
+#define NORMAL 2
 
 
 
@@ -16,5 +17,6 @@ void closeNodes(Node);
 pid_t runNodes(Node);
 void stopNodes(Node, int);
 void listNodes(Node);
+const char* TODO(int status);
 
 #endif

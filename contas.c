@@ -51,6 +51,8 @@ void mudaFlag() {
 }
 
 int simular(int numAnos) {
+    //validar o numero de anos (se for negativo)
+    
 	pid_t cpid;
 
 	cpid = fork();
@@ -81,7 +83,7 @@ int simular(int numAnos) {
                     contas[j] = FORMULA(contas[j]);
                     printf("Conta %d, Saldo %d\n", j+1, contas[j]);
                     printf("QUER TERMINAR - %d\n", FLAG);
-                    sleep(1);
+                    sleep(2);
                     //fprintf(file, "Conta %d, Saldo %d\n", j+1, contas[j]);
                 }
                 
