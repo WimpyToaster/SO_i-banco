@@ -46,20 +46,35 @@ int lerSaldo(int idConta) {
     return contasSaldos[idConta - 1];
 }
 
+
+/****************************************
+* Muda a flag FLAG para 1               *
+* NOTA: Usada no tratamento de sinais   *
+*       da funcao simular               *
+****************************************/
 void mudaFlag() {
     FLAG = 1;
 }
 
+/****************************************
+* Simula -----                          *
+* Recebe: Numero de anos a simular      *
+* Retorna: Id do processo que esta a    *
+*          executar a simulacao         *
+* NOTA: A comentario esta implementada  *
+*       uma maneira alternativa de      *
+*       tratar as simuacoes (ficheiros) *
+****************************************/
 int simular(int numAnos) {
-    //validar o numero de anos (se for negativo)
-    
+    //TODO
+    //-validar o numero de anos (se for negativo)
+    //-reutilisar codigo como em lerSaldo para Ano 0
 	pid_t cpid;
 
 	cpid = fork();
 
-
 	if (cpid == 0) {
-		//FILE * file;
+        //FILE * file;
         //char path[20];
         //sprintf(path, "temp%d.txt", getpid());
         //file = fopen(path, "w");
@@ -70,20 +85,23 @@ int simular(int numAnos) {
         signal (SIGUSR1, mudaFlag); 
 
         for(i=0; i <= numAnos; i++){
-            if(FLAG) {exit(1);}
+            if(FLAG) {
+                    printf("Simulacao terminou por sinal\n");
+                    exit(EXIT_SUCCESS);
+            }
             //fprintf(file, "SIMULACAO: Ano %d\n=================\n", i);
             printf("SIMULACAO: Ano %d\n=================\n", i);
             for(j=0; j < NUM_CONTAS; j++) {
                 if(i == 0) {
                     contas[j] = contasSaldos[j];
                     printf("Conta %d, Saldo %d\n", j+1, contasSaldos[j]);
+                    sleep(1);
                     //fprintf(file, "Conta %d, Saldo %d\n", j+1, contasSaldos[j]);
                 }
                 else {
                     contas[j] = FORMULA(contas[j]);
                     printf("Conta %d, Saldo %d\n", j+1, contas[j]);
-                    printf("QUER TERMINAR - %d\n", FLAG);
-                    sleep(2);
+                    sleep(1);
                     //fprintf(file, "Conta %d, Saldo %d\n", j+1, contas[j]);
                 }
                 
@@ -92,7 +110,7 @@ int simular(int numAnos) {
         }
         //printf("ficheiro %s acabado\n", path);
         //fclose(file);
-        exit(0);
+        exit(EXIT_SUCCESS);
 	} else {
 		return cpid;
 	}

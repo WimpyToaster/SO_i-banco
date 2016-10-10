@@ -45,11 +45,6 @@ int main (int argc, char** argv) {
                 
         if (numargs < 0 ||
 	        (numargs > 0 && numargs == 2 && (strcmp(args[0], COMANDO_SAIR) == 0) && (strcmp(args[1], COMANDO_AGORA) == 0)))  {
-        	
-            /* POR COMPLETAR */
-            //TODO
-            //fechar o controlador de eventos por sinal
-            //fechar(ou matar) processos e imprimir exit status
           
             stopNodes(sims, NOFORCE);
 
@@ -57,11 +52,6 @@ int main (int argc, char** argv) {
         }
         
         else if (numargs > 0 && numargs == 1 && (strcmp(args[0], COMANDO_SAIR)==0)) {
-        	
-            /* POR COMPLETAR */
-            //TODO
-            //fechar o controlador de eventos por sinal
-            //fechar(ou matar) processos e imprimir exit status
             
             stopNodes(sims, NORMAL);
 
@@ -127,9 +117,8 @@ int main (int argc, char** argv) {
 
         /* Simular */
         else if (strcmp(args[0], COMANDO_SIMULAR) == 0) {
-        	// argumentos certos em numero, ver se ja existem 20 filhos, 
-            /* POR COMPLETAR */
-            //ser atoi receber letras devolve 0 logo nao pode ser
+        	//TODO -verificar 20 processos
+            //     -verificar args[1]
             sims = createNode(sims, simular(atoi(args[1])));
 
         }
