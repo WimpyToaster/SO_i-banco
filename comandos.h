@@ -27,6 +27,7 @@
 typedef struct com comando_t;
 
 int initComandos();
+void termComandos(int force);
 void closeThreads(int force);
 void * buscaComando();
 void trataComando(comando_t com, int * curProcess);

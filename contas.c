@@ -50,6 +50,10 @@ void mudaFlag() {
     FLAG_SIM = 1;
 }
 
+void activaSinal() {
+    signal (SIGUSR1, mudaFlag);
+}
+
 /****************************************
 * Simula o valor de conta ao final de   *
 * "numAnos"                             *
@@ -70,8 +74,6 @@ void simular(int numAnos) {
     //file = fopen(path, "w");
     
     int i,j, contas[NUM_CONTAS];
-
-    signal (SIGUSR1, mudaFlag); 
 
     for(i=0; i <= numAnos; i++){
         if(FLAG_SIM) {

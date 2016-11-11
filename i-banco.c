@@ -54,18 +54,12 @@ int main (int argc, char** argv) {
                 
         if (numargs < 0 ||
 	        (numargs > 0 && numargs == 1 && (strcmp(args[0], COMANDO_SAIR)==0)))  {
-            int i;
-            for (i = 0; i < MAX_THREADS; i++)
-                criaComando(OP_SAIR, 0, 0, 0);
-            closeThreads(NORMAL);
+            termComandos(NORMAL);
             exit(EXIT_SUCCESS);
         }
         
         else if (numargs > 0 && numargs == 2 && (strcmp(args[0], COMANDO_SAIR) == 0) && (strcmp(args[1], COMANDO_AGORA) == 0)) {
-            int i;
-            for (i = 0; i < MAX_THREADS; i++)
-                criaComando(OP_SAIR, 0, 0, 0);
-            closeThreads(NOFORCE);
+            termComandos(NOFORCE);
             exit(EXIT_SUCCESS);
         }
 
@@ -83,8 +77,11 @@ int main (int argc, char** argv) {
 	           continue;
             }
 
+            if( ( valor = atoi(args[2]) ) <= 0 && strcmp(args[2], "0") ) {
+                printf("%s: Apenas numeros nao negativos.\n", COMANDO_DEBITAR);
+            }
+
             idConta = atoi(args[1]);
-            valor = atoi(args[2]);
 
             criaComando(OP_DEBITAR, idConta, 0, valor);
         }
@@ -97,8 +94,13 @@ int main (int argc, char** argv) {
                 continue;
             }
 
+            if( ( valor = atoi(args[2]) ) <= 0 && strcmp(args[2], "0") ) {
+                printf("%s: Apenas numeros nao negativos.\n", COMANDO_CREDITAR);
+            }
+
+
             idConta = atoi(args[1]);
-            valor = atoi(args[2]);
+            
 
             criaComando(OP_CREDITAR, idConta, 0, valor);
         }
@@ -119,7 +121,7 @@ int main (int argc, char** argv) {
         else if (strcmp(args[0], COMANDO_SIMULAR) == 0) {
 
             int i;
-            if ( ( ( i = atoi(args[1]) ) == 0 && strcmp(args[1], "0") ) ) {
+            if ( ( i = atoi(args[1]) ) <= 0 && strcmp(args[1], "0") ) {
                 printf("Simular apenas aceita numeros nao negativos %s\n", args[1]);
                 continue;
             }
@@ -140,9 +142,12 @@ int main (int argc, char** argv) {
                continue;
             }
 
+            if( ( valor = atoi(args[3]) ) <= 0 && strcmp(args[3], "0") ) {
+                printf("%s: Apenas numeros nao negativos.\n", COMANDO_TRANSFERENCIA);
+            }
+
             idConta = atoi(args[1]);
             idConta2 = atoi(args[2]);
-            valor = atoi(args[3]);
 
             criaComando(OP_TRANSFERIR, idConta, idConta2, valor);
         }

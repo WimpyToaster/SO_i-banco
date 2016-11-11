@@ -29,11 +29,8 @@ pthread_mutex_t trinco_tr, trinco_cr, trinco_sims, trinco_contador;
 pthread_mutex_t trinco_contas[NUM_CONTAS];
 
 // Trincos condicionais (simulacoes)
-pthread_cond_t transferencias[NUM_CONTAS];
 pthread_cond_t pode_simular;
 
-// Lista de condicoes de tranferencia;
-int trns[NUM_CONTAS];
 
 // Contador de operacoes a exeutar
 int op_counter;
@@ -56,14 +53,6 @@ int initComandos() {
 	}
 
 	for(i=0; i < NUM_CONTAS; i++) {
-
-		// Inicializacao das condicoes de tranferencia
-		if(pthread_cond_init(&transferencias[i], NULL))
-			return -1;
-
-		// Inicializacao dos estados de transferencias
-		trns[i] = 1;
-		
 		// Inicializacao dos trincos
 		if(pthread_mutex_init(&trinco_contas[i], 0))
 			return -1;
@@ -101,6 +90,28 @@ int initComandos() {
 	return 0;
 }
 
+void termComandos(int force) {
+	int i;
+
+	for (i = 0; i < MAX_THREADS; i++)
+        criaComando(OP_SAIR, 0, 0, 0);
+    activaSinal();
+    closeThreads(force);
+
+	for(i = 0; i < NUM_CONTAS; i++) {
+		pthread_mutex_destroy(&trinco_contas[i]);
+	}
+
+	pthread_cond_destroy(&pode_simular);
+	pthread_mutex_destroy(&trinco_cr);
+	pthread_mutex_destroy(&trinco_tr);
+	pthread_mutex_destroy(&trinco_sims);
+	pthread_mutex_destroy(&trinco_contador);
+
+	sem_destroy(&pode_criar);
+	sem_destroy(&pode_tratar);
+
+}
 
 
 /****************************************
@@ -194,14 +205,16 @@ void trataComando(comando_t com, int * curProcess) {
 			// fecha o contador
 			fechar(&trinco_contador);
 			// caso haja mais do que uma(simulacao) a correr espera o seu termino
+			
 			while(op_counter > 1) pthread_cond_wait(&pode_simular, &trinco_contador);
             
             cpid = fork();
-
             if (cpid == 0) {
                 //codigo do filho
                 simular(com.valor);
                 exit(EXIT_SUCCESS);
+            } else if (cpid < 0) {
+            	printf("Deu erro a criar filho\n");
             } else {
                 //codigo do pai
 
@@ -274,8 +287,9 @@ void criaComando(int command, int conta, int conta2, int valor) {
 	com_buffer[ptr_criacoms].valor = valor;
 	ptr_criacoms = (ptr_criacoms+1) % MAX_COMANDOS;
 	
-	aumentaContador();
-
+	if(command != OP_SAIR) {
+		aumentaContador();
+	}
 	abrir(&trinco_cr);
 	assinalar(&pode_tratar);
 }
