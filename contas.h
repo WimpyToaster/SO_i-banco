@@ -6,11 +6,17 @@
 #ifndef CONTAS_H
 #define CONTAS_H
 
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+
 #define NUM_CONTAS 10
 #define TAXAJURO 0.1
 #define CUSTOMANUTENCAO 1
-#define FORMULA(A) ({int next = (A * (1 + TAXAJURO) - CUSTOMANUTENCAO); (next > 0) ? next : 0;})
-					
+#define FORMULA(A) ( (A * (1 + TAXAJURO) - CUSTOMANUTENCAO) )
+#define MAX(X,Y) ((X > Y) ? X : Y)
+#define atrasar() sleep(ATRASO)
 
 #define ATRASO 1
 
@@ -19,7 +25,7 @@ int contaExiste(int idConta);
 int debitar(int idConta, int valor);
 int creditar(int idConta, int valor);
 int lerSaldo(int idConta);
-int simular(int numAnos);
+void simular(int numAnos);
 
 
 #endif

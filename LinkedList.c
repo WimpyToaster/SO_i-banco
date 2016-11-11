@@ -1,10 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/wait.h>
 #include "LinkedList.h"
-
 
 /****************************************
 * Estrutura onde se guardam os id's dos *
@@ -106,13 +100,13 @@ void runNodes(Node head) {
 * que terminar                          *
 * NOTA:                                 *
 * 1:                                    *
-*	- FORCE    = termina o processo     *
-*			     pelo sistema           *
+*   - FORCE    = termina o processo     *
+*                pelo sistema           *
 *   - NOFORCE  = espera que o processo  *
 *                termine                *
 *   - SIGFORCE = manda sinal para       *
 *                terminar e espera      *
-* 2: 									*
+* 2:                                    *
 *   Funciona de forma iterativa, ou     *
 *   seja, manda o proximo sinal apos o  *
 *   fim do processo anterior            *
@@ -120,15 +114,13 @@ void runNodes(Node head) {
 void stopNodes(Node head, int force) {
 	Node iter = head;
 	int status;
-	int command;
 	pid_t res;
 	int finish[20][2];
 	int i = 0;
 	int sig;
 
 	if (force == FORCE) sig = SIGTERM;
-	else if (force == NOFORCE) sig = SIGUSR1; 
-
+	else if (force == NOFORCE) sig = SIGUSR1;
 	while (iter != NULL) {
 		res = waitpid(iter->_pid, &status, WNOHANG);
 		if (res == 0){
@@ -154,7 +146,7 @@ void stopNodes(Node head, int force) {
 
 	printf("i-banco vai terminar.\n--\n");
 	for (i--; i >= 0; i--) {
-		printf("FILHO TERMINADO (PID=%d; terminou %s)\n", finish[i][0], TODO(finish[i][1]));
+		printf("FILHO TERMINADO (PID=%d; terminou %s)\n", finish[i][0], trataEstado(finish[i][1]));
 	}
 	printf("--\ni-banco terminou.\n");
 
@@ -180,11 +172,9 @@ void listNodes(Node head) {
 *	  ocurrido erros                    *
 *   - "abruptamente" caso contrario     *
 ****************************************/
-const char* TODO(int status){
-	if (WEXITSTATUS(status)  == EXIT_SUCCESS) {
-		return "normalmente";
-	}
-	else{
-		return "abruptamente";
-	}
+const char* trataEstado(int status){
+	if(WIFEXITED(status))
+		if (WEXITSTATUS(status)  == EXIT_SUCCESS)
+			return "normalmente";
+	return "abruptamente";
 }

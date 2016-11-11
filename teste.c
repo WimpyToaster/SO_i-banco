@@ -1,57 +1,39 @@
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include "LinkedList.h"
+
+#define N 4
 
 
+pthread_t tid [N];
 
-int criaProcessos() {
-	pid_t cpid = fork();
-	if (cpid == 0) {
-		while(1) { 
-			sleep(1);
+int buffer[5][3];
+int ptr_con = 0, ptr_bui = 0;
+pthread_mutex_t trinco_con, trinco_bui;
+
+void espera() {
+
+}
+
+void init() {
+	pthread_mutex_init(&trinco_con, NULL);
+	pthread_mutex_init(&trinco_bui, NULL);
+}
+
+void * trataPedido(void * ptr) {
+	printf("Sou a thread %ld\n", pthread_self());
+
+}
+
+void main () {	
+	int i;
+	for (i=0; i<N; i++) {
+		if (pthread_create(&tid[i], NULL,trataPedido, (void *) &buffer) == 0)
+			printf("Criou com sucesso a tarefa %ld\n", tid[i]);
+		else {
+			printf("shit happened");
+			exit(1);
 		}
-	} else {
-		return cpid;
 	}
-}
-
-int criaProcessoQA() {
-	pid_t cpid = fork();
-	if (cpid == 0) {
-			sleep(2);
-			printf("suis finni\n");
-			exit(0);
-	} else {
-		return cpid;
-	}
-}
-
-int main() {
-
-	Node proc = NULL;
-
-	proc = createNode(proc, criaProcessos());
-	proc = createNode(proc, criaProcessos());
-	proc = createNode(proc, criaProcessoQA());
-
-	listNodes(proc);
-	printf("#######\n");
-	int i = 0;
-	while(i < 3) {
-		runNodes(&proc);
-		listNodes(proc);
-		printf("#######\n");
-		sleep(3);
-		i++;
-	}
-	printf("saiu do loop\n");
-	listNodes(proc);
-	stopNodes(proc, 0);
-	printf("parou tudo\n");
-
-	return 0;
 }
 

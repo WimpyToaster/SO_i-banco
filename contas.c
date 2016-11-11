@@ -1,12 +1,6 @@
 #include "contas.h"
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
 
-#define atrasar() sleep(ATRASO)
-
-int FLAG = 0;
+int FLAG_SIM = 0;
 int contasSaldos[NUM_CONTAS];
 
 
@@ -53,65 +47,55 @@ int lerSaldo(int idConta) {
 *       da funcao simular               *
 ****************************************/
 void mudaFlag() {
-    FLAG = 1;
+    FLAG_SIM = 1;
 }
 
 /****************************************
-* Simula -----                          *
+* Simula o valor de conta ao final de   *
+* "numAnos"                             *
 * Recebe: Numero de anos a simular      *
-* Retorna: Id do processo que esta a    *
-*          executar a simulacao         *
 * NOTA: A comentario esta implementada  *
 *       uma maneira alternativa de      *
 *       tratar as simuacoes (ficheiros) *
 ****************************************/
-int simular(int numAnos) {
-    //TODO
-    //-validar o numero de anos (se for negativo)
-    //-reutilisar codigo como em lerSaldo para Ano 0
-	pid_t cpid;
+void simular(int numAnos) {
+    if (numAnos < 0) {
+        printf("Numero de anos nao pode ser negativo!\n");
+        return;
+    }
 
-	cpid = fork();
+    //FILE * file;
+    //char path[20];
+    //sprintf(path, "temp%d.txt", getpid());
+    //file = fopen(path, "w");
+    
+    int i,j, contas[NUM_CONTAS];
 
-	if (cpid == 0) {
-        //FILE * file;
-        //char path[20];
-        //sprintf(path, "temp%d.txt", getpid());
-        //file = fopen(path, "w");
-        
-        int i,j, contas[NUM_CONTAS];
+    signal (SIGUSR1, mudaFlag); 
 
-        //introduzir signal hangler
-        signal (SIGUSR1, mudaFlag); 
-
-        for(i=0; i <= numAnos; i++){
-            if(FLAG) {
-                    printf("Simulacao terminou por sinal\n");
-                    exit(EXIT_SUCCESS);
-            }
-            //fprintf(file, "SIMULACAO: Ano %d\n=================\n", i);
-            printf("SIMULACAO: Ano %d\n=================\n", i);
-            for(j=0; j < NUM_CONTAS; j++) {
-                if(i == 0) {
-                    contas[j] = contasSaldos[j];
-                    printf("Conta %d, Saldo %d\n", j+1, contasSaldos[j]);
-                    sleep(1);
-                    //fprintf(file, "Conta %d, Saldo %d\n", j+1, contasSaldos[j]);
-                }
-                else {
-                    contas[j] = FORMULA(contas[j]);
-                    printf("Conta %d, Saldo %d\n", j+1, contas[j]);
-                    sleep(1);
-                    //fprintf(file, "Conta %d, Saldo %d\n", j+1, contas[j]);
-                }
-                
-            }
-            printf("\n");
+    for(i=0; i <= numAnos; i++){
+        if(FLAG_SIM) {
+                printf("Simulacao terminou por sinal\n");
+                exit(EXIT_SUCCESS);
         }
-        //printf("ficheiro %s acabado\n", path);
-        //fclose(file);
-        exit(EXIT_SUCCESS);
-	} else {
-		return cpid;
-	}
+        //fprintf(file, "SIMULACAO: Ano %d\n=================\n", i);
+        printf("SIMULACAO: Ano %d\n=================\n", i);
+        for(j=0; j < NUM_CONTAS; j++) {
+            if(i == 0) {
+                contas[j] = lerSaldo(j+1);
+                printf("Conta %d, Saldo %d\n", j+1, contas[j]);
+                //fprintf(file, "Conta %d, Saldo %d\n", j+1, contasSaldos[j]);
+            }
+            else {
+                contas[j] = MAX(FORMULA(contas[j]), 0);
+                printf("Conta %d, Saldo %d\n", j+1, contas[j]);
+                sleep(1);
+                //fprintf(file, "Conta %d, Saldo %d\n", j+1, contas[j]);
+            }
+            
+        }
+        printf("\n");
+    }
+    //printf("ficheiro %s acabado\n", path);
+    //fclose(file);
 }

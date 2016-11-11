@@ -1,10 +1,4 @@
-CC=gcc
-CFLAGS=-I.
-DEPS = contas.h LinkedList.h commandlinereader.h
-
-%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
-
-main: contas.o i-banco.o LinkedList.o commandlinereader.o
-	gcc -o main contas.o i-banco.o LinkedList.o	commandlinereader.o
-
+main: contas.c i-banco.c LinkedList.c commandlinereader.c comandos.c wrappers.c
+	gcc -pthread -Wall -pedantic -g -o main contas.c i-banco.c LinkedList.c commandlinereader.c comandos.c wrappers.c
+clean:
+	rm *.o
